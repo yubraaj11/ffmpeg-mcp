@@ -1,9 +1,10 @@
 import json
 import logging
-import subprocess
 from pathlib import Path
-from typing import Optional, List
+from typing import List, Optional
 from uuid import uuid4
+
+import ffmpeg
 
 from ffmpeg_mcp.configs import setup_logging
 from ffmpeg_mcp.exceptions import build_exception_message
@@ -37,7 +38,6 @@ def extract_frames(
 
 	Returns:
 	    List[str]: List of file paths for the extracted frames with UUID-based filenames.
-
 	"""
 	Path(output_dir).mkdir(parents=True, exist_ok=True)
 
@@ -62,8 +62,11 @@ def extract_frames(
 			timestamp = i * interval
 			unique_name = f'frame_{uuid4().hex}.jpg'
 			output_path = Path(output_dir) / unique_name
-			subprocess.run(
-				['ffmpeg', '-ss', str(timestamp), '-i', input_video_path, '-frames:v', '1', '-q:v', '2', str(output_path)], check=True
+			(
+				ffmpeg.input(input_video_path, ss=timestamp)
+				.output(str(output_path), vframes=1, qscale=2)
+				.overwrite_output()
+				.run(quiet=True)
 			)
 			frame_files.append(str(output_path))
 
@@ -73,8 +76,11 @@ def extract_frames(
 		while current_time < total_duration:
 			unique_name = f'frame_{uuid4().hex}.jpg'
 			output_path = Path(output_dir) / unique_name
-			subprocess.run(
-				['ffmpeg', '-ss', str(current_time), '-i', input_video_path, '-frames:v', '1', '-q:v', '2', str(output_path)], check=True
+			(
+				ffmpeg.input(input_video_path, ss=current_time)
+				.output(str(output_path), vframes=1, qscale=2)
+				.overwrite_output()
+				.run(quiet=True)
 			)
 			frame_files.append(str(output_path))
 			current_time += timestamp_offset
@@ -86,8 +92,11 @@ def extract_frames(
 		while current_time < total_duration:
 			unique_name = f'frame_{uuid4().hex}.jpg'
 			output_path = Path(output_dir) / unique_name
-			subprocess.run(
-				['ffmpeg', '-ss', str(current_time), '-i', input_video_path, '-frames:v', '1', '-q:v', '2', str(output_path)], check=True
+			(
+				ffmpeg.input(input_video_path, ss=current_time)
+				.output(str(output_path), vframes=1, qscale=2)
+				.overwrite_output()
+				.run(quiet=True)
 			)
 			frame_files.append(str(output_path))
 			current_time += timestamp_offset
