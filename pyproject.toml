@@ -1,0 +1,33 @@
+[project]
+name = "ffmpeg-mcp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "colorlog>=6.9.0",
+    "fastapi>=0.116.1",
+    "fastmcp>=2.11.3",
+    "ffmpeg-python>=0.2.0",
+    "pydantic>=2.11.7",
+    "uvicorn>=0.35.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.11",
+]
+
+[tool.ruff]
+line-length = 138
+fix = true
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "PLE"]
+ignore = ["E101", "E402", "E501", "F841", "E731"]
+unfixable = ["E101", "E402", "E501", "F841", "E731"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "tab"
+docstring-code-format = true

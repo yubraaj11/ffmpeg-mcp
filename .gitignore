@@ -1,0 +1,40 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+
+# Virtualenv
+.venv/
+venv/
+env/
+ENV/
+*.env
+
+# Ruff cache
+.ruff_cache/
+
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Tests
+tests/.pytest_cache/
+
+# Notebooks
+notebooks/
+
+# Experiments
+*/experiments/
