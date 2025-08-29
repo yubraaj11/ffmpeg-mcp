@@ -12,7 +12,8 @@ This project provides a framework for handling media processing tasks using:
 
 - `extract_frames`
   - params: 
-    - `input_video_path`: str
+    - `input_video_path`: str | Path
+    - `output_dir`: str | Path
     - `number_of_frames`: int
     - `frame_timestamps`: int (eg: 5s, 10s, 15s, ...)
 - `extract_audio`

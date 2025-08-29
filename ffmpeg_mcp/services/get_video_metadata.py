@@ -10,7 +10,6 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 
-@validate_input_video_path
 def get_video_metadata(input_video_path: str):
 	"""
 	Function to extract metadata of the given input video.
