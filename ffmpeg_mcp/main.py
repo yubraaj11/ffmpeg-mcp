@@ -1,11 +1,21 @@
 import logging
 
-from ffmpeg_mcp.configs.logging_config import setup_logging
+from fastmcp import FastMCP
+
+from ffmpeg_mcp.configs import setup_logging
+from ffmpeg_mcp.services import extract_frames
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
-# Example usage of logging
-logger.info('This is an info message.')
-logger.warning('This is a warning message.')
-logger.error('This is an error message.')
+mcp = FastMCP(name='ffmpeg-mcp', version='0.1.0')
+mcp.tool(name_or_fn=extract_frames)
+
+
+def main():
+	logger.info('Server running...')
+	mcp.run(transport='stdio')
+
+
+if __name__ == '__main__':
+	main()
