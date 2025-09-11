@@ -1,8 +1,9 @@
+import logging
+import os
 from pathlib import Path
 from typing import Literal
+
 import ffmpeg
-import os
-import logging
 
 from ffmpeg_mcp.configs.logging_config import setup_logging
 
@@ -17,114 +18,93 @@ os.makedirs(VIDEO_OVERLAY_PATH, exist_ok=True)
 
 
 class OverlayVideo:
-    """
-    A class to overlay one video on top of another using ffmpeg-python.
-    """
+	"""
+	A class to overlay one video on top of another using ffmpeg-python.
+	"""
 
-    def __init__(self):
-        pass
+	def __init__(self):
+		pass
 
-    def overlays_video(
-        self,
-        input_video_path: str,
-        overlay_video_path: str,
-        output_filename: str = "output.mp4",
-        positioning: Literal["top_left", "bottom_left", "top_right", "bottom_right"] = "bottom_right",
-        scale: tuple = (200, 300),
-        keep_audio: bool = True,
-    ) -> str:
-        """
-        Overlay a video on top of another with simple positioning.
+	def overlays_video(
+		self,
+		input_video_path: str,
+		overlay_video_path: str,
+		output_filename: str = 'output.mp4',
+		positioning: Literal['top_left', 'bottom_left', 'top_right', 'bottom_right'] = 'bottom_right',
+		scale: tuple = (200, 300),
+		keep_audio: bool = True,
+	) -> str:
+		"""
+		Overlay a video on top of another with simple positioning.
 
-        Args:
-            input_video_path (str): Path to background video.
-            overlay_video_path (str): Path to overlay video.
-            output_filename (str): Name of the output video file (saved inside VIDEO_OVERLAY_PATH).
-            positioning (Literal): Where to place overlay.
-            scale (tuple): (width, height) to resize overlay video before placing.
-            keep_audio (bool): Whether to keep background audio.
+		Args:
+		    input_video_path (str): Path to background video.
+		    overlay_video_path (str): Path to overlay video.
+		    output_filename (str): Name of the output video file (saved inside VIDEO_OVERLAY_PATH).
+		    positioning (Literal): Where to place overlay.
+		    scale (tuple): (width, height) to resize overlay video before placing.
+		    keep_audio (bool): Whether to keep background audio.
 
-        Returns:
-            str: Path to the generated video.
-        """
+		Returns:
+		    str: Path to the generated video.
+		"""
 
-        input_video = Path(input_video_path)
-        overlay_video = Path(overlay_video_path)
-        output = Path(VIDEO_OVERLAY_PATH) / output_filename
+		input_video = Path(input_video_path)
+		overlay_video = Path(overlay_video_path)
+		output = Path(VIDEO_OVERLAY_PATH) / output_filename
 
-        if not input_video.exists():
-            raise FileNotFoundError(f"Background video not found: {input_video}")
-        if not overlay_video.exists():
-            raise FileNotFoundError(f"Overlay video not found: {overlay_video}")
+		if not input_video.exists():
+			raise FileNotFoundError(f'Background video not found: {input_video}')
+		if not overlay_video.exists():
+			raise FileNotFoundError(f'Overlay video not found: {overlay_video}')
 
-        logger.info(f"Processing overlay: {input_video} + {overlay_video} -> {output}")
+		logger.info(f'Processing overlay: {input_video} + {overlay_video} -> {output}')
 
-        bg_stream = ffmpeg.input(str(input_video))
-        ov_stream = ffmpeg.input(str(overlay_video))
+		bg_stream = ffmpeg.input(str(input_video))
+		ov_stream = ffmpeg.input(str(overlay_video))
 
-        if scale:
-            ov_stream = ffmpeg.filter(ov_stream, "scale", scale[0], scale[1])
+		if scale:
+			ov_stream = ffmpeg.filter(ov_stream, 'scale', scale[0], scale[1])
 
-        positions = {
-            "top_left": ("10", "10"),
-            "top_right": ("W-w-10", "10"),
-            "bottom_left": ("10", "H-h-10"),
-            "bottom_right": ("W-w-10", "H-h-10"),
-        }
+		positions = {
+			'top_left': ('10', '10'),
+			'top_right': ('W-w-10', '10'),
+			'bottom_left': ('10', 'H-h-10'),
+			'bottom_right': ('W-w-10', 'H-h-10'),
+		}
 
-        if positioning not in positions:
-            raise ValueError(f"Invalid positioning: {positioning}")
+		if positioning not in positions:
+			raise ValueError(f'Invalid positioning: {positioning}')
 
-        x, y = positions[positioning]
+		x, y = positions[positioning]
 
-        video = ffmpeg.overlay(bg_stream.video, ov_stream, x=x, y=y)
+		video = ffmpeg.overlay(bg_stream.video, ov_stream, x=x, y=y)
 
-        if keep_audio:
-            audio = bg_stream.audio
-            out = ffmpeg.output(video, audio, str(output))
-        else:
-            out = ffmpeg.output(video, str(output))
+		if keep_audio:
+			audio = bg_stream.audio
+			out = ffmpeg.output(video, audio, str(output))
+		else:
+			out = ffmpeg.output(video, str(output))
 
-        out.run(overwrite_output=True)
-        logger.info(f"Overlay complete: {output}")
+		out.run(overwrite_output=True)
+		logger.info(f'Overlay complete: {output}')
 
-        return str(output)
+		return str(output)
 
 
 def ask_for_scale() -> tuple:
-    """Ask the user for scale input or return default (200, 300)."""
-    scale_choice = input("Enter scale as width,height (default=200,300): ").strip()
-    if scale_choice:
-        try:
-            width, height = map(int, scale_choice.split(","))
-            return (width, height)
-        except ValueError:
-            print("Invalid input, using default scale (200,300).")
-    return (200, 300)
+	"""Ask the user for scale input or return default (200, 300)."""
+	scale_choice = input('Enter scale as width,height (default=200,300): ').strip()
+	if scale_choice:
+		try:
+			width, height = map(int, scale_choice.split(','))
+			return (width, height)
+		except ValueError:
+			print('Invalid input, using default scale (200,300).')
+	return (200, 300)
 
 
 def ask_for_position() -> str:
-    """Ask the user for positioning or return default (bottom_right)."""
-    pos_choice = input(
-        "Enter positioning (top_left, top_right, bottom_left, bottom_right) [default=bottom_right]: "
-    ).strip()
-    return pos_choice if pos_choice in ["top_left", "top_right", "bottom_left", "bottom_right"] else "bottom_right"
-
-
-if __name__ == "__main__":
-    vo = OverlayVideo()
-
-    scale = ask_for_scale()
-    positioning = ask_for_position()
-
-    output_file = vo.overlays_video(
-        input_video_path="/home/swati/Downloads/clip1.mp4",
-        overlay_video_path="/home/swati/Downloads/clip2.mp4",
-        output_filename="overlay_result.mp4",
-        positioning=positioning,
-        scale=scale,
-        keep_audio=True,
-    )
-
-    print(f"Final video saved at: {output_file}")
-
+	"""Ask the user for positioning or return default (bottom_right)."""
+	pos_choice = input('Enter positioning (top_left, top_right, bottom_left, bottom_right) [default=bottom_right]: ').strip()
+	return pos_choice if pos_choice in ['top_left', 'top_right', 'bottom_left', 'bottom_right'] else 'bottom_right'
