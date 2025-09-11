@@ -90,21 +90,3 @@ class OverlayVideo:
 		logger.info(f'Overlay complete: {output}')
 
 		return str(output)
-
-
-def ask_for_scale() -> tuple:
-	"""Ask the user for scale input or return default (200, 300)."""
-	scale_choice = input('Enter scale as width,height (default=200,300): ').strip()
-	if scale_choice:
-		try:
-			width, height = map(int, scale_choice.split(','))
-			return (width, height)
-		except ValueError:
-			print('Invalid input, using default scale (200,300).')
-	return (200, 300)
-
-
-def ask_for_position() -> str:
-	"""Ask the user for positioning or return default (bottom_right)."""
-	pos_choice = input('Enter positioning (top_left, top_right, bottom_left, bottom_right) [default=bottom_right]: ').strip()
-	return pos_choice if pos_choice in ['top_left', 'top_right', 'bottom_left', 'bottom_right'] else 'bottom_right'
