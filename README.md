@@ -2,11 +2,15 @@
 
 A Python package for media processing using FFmpeg and FastMCP.
 
+---
+
 ## Overview
 
 This project provides a framework for handling media processing tasks using:
 1. **FFmpeg** - A powerful multimedia framework for processing audio and video files
 2. **FastMCP** - A high-performance framework for building microservices
+
+---
 
 ## Available Tools
 
@@ -61,17 +65,22 @@ This project provides a framework for handling media processing tasks using:
     - `start_timestamp`:
     - `duration`:
 
+---
+
 ## Utilities
 
 The `utils` folder contains helper functions and decorators to enhance the functionality and robustness of the media processing tools.
 
-### Decorators
+### a. Decorators
 
 - `validate_input_video_path`: A decorator that checks if the video path exists, is non-empty, and is a valid video file. This ensures that all video processing functions receive a valid input file.
+
+---
 
 ## Requirements
 
 - Python 3.12 or higher
+- uv (package manager)
 - FFmpeg installed on the system
 
 ## Installation
@@ -79,10 +88,59 @@ The `utils` folder contains helper functions and decorators to enhance the funct
 ```bash
 pip install ffmpeg-mcp
 ```
+---
 
 ## Usage
 
 The package can be used to build media processing microservices that leverage the power of FFmpeg through a Python interface.
+
+### MCP configs
+```json
+# Cline configuration
+
+{
+  "mcpServers": {
+    "ffmpeg-mcp": {
+      "autoApprove": [],
+      "disabled": false,
+      "timeout": 60,
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/Users/student/Documents/xxx/ffmpeg-mcp/ffmpeg_mcp",
+        "run",
+        "main.py"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/student/Documents/xxx/ffmpeg-mcp"
+      },
+      "transportType": "stdio"
+    }
+  }
+}
+
+# VS-code configuration
+
+{
+  "servers": {
+    "ffmpeg-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/Users/student/Documents/xxx/ffmpeg-mcp/ffmpeg_mcp",
+        "run",
+        "main.py"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/student/Documents/xxx/ffmpeg-mcp"
+      }
+    }
+  },
+  "inputs": []
+}
+```
+---
 
 ## Dependencies
 
@@ -91,3 +149,4 @@ The package can be used to build media processing microservices that leverage th
 - `colorlog` - Colored logging output
 - `fastapi` - Web framework for building APIs
 - `pydantic` - Data validation and settings management
+---
