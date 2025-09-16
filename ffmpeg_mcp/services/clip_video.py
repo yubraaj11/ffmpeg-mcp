@@ -66,7 +66,7 @@ def clip_video(input_video_path: str, start_timestamp: float = 0.0, duration: fl
 		return build_exception_message(error_type=Exception, message=f'Unexpected error: {str(e)}')
 
 
-if __name__ == '__main__':
-	path = '/Users/student/Downloads/IMG_4766.MOV'
-	paths = clip_video(input_video_path=path, start_timestamp=0.0, duration=2.0)
-	print(paths)
+# if __name__ == '__main__':
+# 	path = '/Users/student/Downloads/IMG_4766.MOV'
+# 	paths = clip_video(input_video_path=path, start_timestamp=0.0, duration=2.0)
+# 	print(paths)
