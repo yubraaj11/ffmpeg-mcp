@@ -3,13 +3,16 @@ import logging
 from fastmcp import FastMCP
 
 from ffmpeg_mcp.configs import setup_logging
-from ffmpeg_mcp.services import extract_frames
+from ffmpeg_mcp.services import extract_frames, extract_audio, clip_video, crop_video
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 mcp = FastMCP(name='ffmpeg-mcp', version='0.1.0')
 mcp.tool(name_or_fn=extract_frames)
+mcp.tool(name_or_fn=extract_audio)
+mcp.tool(name_or_fn=clip_video)
+mcp.tool(name_or_fn=crop_video)
 
 
 def main():
