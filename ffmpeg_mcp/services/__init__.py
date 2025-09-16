@@ -7,5 +7,6 @@ from ffmpeg_mcp.services.overlays_video import overlays_video
 from ffmpeg_mcp.services.trim_and_concatenate_video import trim_and_concat_operation	
 from ffmpeg_mcp.services.concat_clips_with_transition import concat_clips_with_transition
 from ffmpeg_mcp.services.normalize_video_clips import get_normalized_clips
+from ffmpeg_mcp.services.scale_video import scale_video
 
-__all__ = ['clip_video', 'crop_video', 'extract_audio', 'extract_frames', 'get_video_metadata', 'overlays_video', 'trim_and_concat_operation', 'concat_clips_with_transition', 'get_normalized_clips']
+__all__ = ['clip_video', 'crop_video', 'extract_audio', 'extract_frames', 'get_video_metadata', 'overlays_video', 'trim_and_concat_operation', 'concat_clips_with_transition', 'get_normalized_clips', 'scale_video']
