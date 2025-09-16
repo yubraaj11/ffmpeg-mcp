@@ -7,6 +7,7 @@ A Python package for media processing using FFmpeg and FastMCP.
 ## Overview
 
 This project provides a framework for handling media processing tasks using:
+
 1. **FFmpeg** - A powerful multimedia framework for processing audio and video files
 2. **FastMCP** - A high-performance framework for building microservices
 
@@ -15,7 +16,7 @@ This project provides a framework for handling media processing tasks using:
 ## Available Tools
 
 - `extract_frames`
-  - params: 
+  - params:
     - `input_video_path`: str | Path
     - `number_of_frames`: int
     - `frame_timestamps`: int (eg: 5s, 10s, 15s, ...)
@@ -28,11 +29,16 @@ This project provides a framework for handling media processing tasks using:
     - `height`: Optional
     - `width`: Optional
     - `keep_aspect_ratio`: bool
-- `overlays_image`
+- `overlay_image`
   - params:
     - `input_video_path`: str
-    - `image_path`: str
-    - `positioning`: Literal[top_left, bottom_left, top_right, bottom_right] = 'top_left' (default)
+    - `overlay_image_path`: str
+    - `positioning`: Literal[top_left, bottom_left, top_right, bottom_right, center, top_center, bottom_center] = 'top_right' (default)
+    - `scale`: tuple[int, int] | None = (100, 100) (default)
+    - `keep_audio`: bool = True (default)
+    - `opacity`: float | None = None (default) — range 0.0–1.0
+    - `start_time`: float = 0.0 (default, in seconds)
+    - `duration`: float | None = None (default, in seconds; None = until end of video)
 - `overlays_video`
   - params:
     - `input_video_path`: str
@@ -44,7 +50,7 @@ This project provides a framework for handling media processing tasks using:
 - `clip_video`:
   - params:
     - `input_video_path`: str
-    - `start_timestamp`: 
+    - `start_timestamp`:
     - `duration`: int
 - `crop_video`:
   - params:
@@ -64,7 +70,10 @@ This project provides a framework for handling media processing tasks using:
     - `input_video_path`:
     - `start_timestamp`:
     - `duration`:
-
+- `scale_video`:
+  - params:
+    - `input_video_path`: str
+    - `resolution`: Optional[str]
 ---
 
 ## Utilities

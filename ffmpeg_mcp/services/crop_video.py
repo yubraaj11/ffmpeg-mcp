@@ -68,7 +68,7 @@ def crop_video(input_video_path: str, safe_crop: bool = False, height: int = 480
 		return build_exception_message(error_type=Exception, message=f'An unexpected error occurred: {str(e)}')
 
 
-if __name__ == '__main__':
-	path = '/Users/student/Downloads/IMG_4818.MOV'
-	val = crop_video(path, height=120, width=4096, x_offset=0, y_offset=0)
-	print(val)
+# if __name__ == '__main__':
+# 	path = '/Users/student/Downloads/IMG_4818.MOV'
+# 	val = crop_video(path, height=120, width=4096, x_offset=0, y_offset=0)
+# 	print(val)
