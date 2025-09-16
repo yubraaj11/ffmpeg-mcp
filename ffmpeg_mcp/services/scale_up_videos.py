@@ -70,5 +70,3 @@ def scale_up_videos(input_video_path: str, resolution: str = '1080p') -> str:
 		return build_exception_message(error_type=Exception, message= f'An unexpected error occured: {str(e)}',)
 
 
-# if __name__ == '__main__':
-# 	print(scale_up_videos(input_video_path='/home/yogesh/Downloads/vid1.MOV', resolution='2k'))
