@@ -33,7 +33,23 @@ def overlay_image(
         start_time: float = 0.0,
         duration: float | None = None,
 ) -> str:
-    
+    """
+    Overlay an image on top of a video with timing control.
+
+    Args:
+        input_video_path (str): Path to background video.
+        overlay_image_path (str): Path to image file.
+        output_filename (str): Output video filename (saved inside VIDEO_OVERLAY_PATH).
+        positioning (Literal): Where to place overlay.
+        scale (tuple | None): (width, height) to resize image before placing.
+        keep_audio (bool): Whether to keep background audio.
+        opacity (float | None): Transparency level (0–1). None = no alpha applied.
+        start_time (float): When to start showing overlay (seconds).
+        duration (float | None): How long to show overlay (seconds). None = until end of video.
+
+    Returns:
+        str: Path to generated video.
+    """
     input_video = Path(input_video_path)
     overlay_image = Path(overlay_image_path)
     output = Path(IMAGE_OVERLAY_PATH) / output_filename
