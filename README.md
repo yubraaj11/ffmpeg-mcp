@@ -13,7 +13,6 @@ This project provides a framework for handling media processing tasks using:
 - `extract_frames`
   - params: 
     - `input_video_path`: str | Path
-    - `output_dir`: str | Path
     - `number_of_frames`: int
     - `frame_timestamps`: int (eg: 5s, 10s, 15s, ...)
 - `extract_audio`
@@ -45,6 +44,7 @@ This project provides a framework for handling media processing tasks using:
     - `duration`: int
 - `crop_video`:
   - params:
+    - `input_video_path`
     - `safe_crop`: bool
     - `height`: int
     - `width`: int
@@ -52,10 +52,12 @@ This project provides a framework for handling media processing tasks using:
     - `y_offset`: int
 - `trim_and_concatenate`:
   - params:
+    - `input_video_path`
     - `number_of_trims`: int
     - `trim_timestamp`: List[(start, end), (start, end), ...]
 - `make_gif`:
   - params:
+    - `input_video_path`:
     - `start_timestamp`:
     - `duration`:
 
