@@ -16,7 +16,7 @@ os.makedirs(os.path.dirname(output_video_path), exist_ok=True)
 
 
 @validate_input_video_path
-def scale_up_videos(input_video_path: str, resolution: str = '1080p') -> str:
+def scale_videos(input_video_path: str, resolution: str = '1080p') -> str:
 	"""
 		Upscales a video to 1080p, 2K, or 4K using FFmpeg while preserving aspect ratio and color accuracy.
 
