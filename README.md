@@ -60,7 +60,7 @@ This project provides a framework for handling media processing tasks using:
     - `input_video_path`:
     - `start_timestamp`:
     - `duration`:
-- `scale_up_videos`:
+- `scale_videos`:
   - params:
     - `input_video_path`: str
     - `resolution`: Optional[str]
