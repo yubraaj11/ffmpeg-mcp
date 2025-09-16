@@ -81,10 +81,14 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 		a = ffmpeg.filter([audio1, audio2], 'acrossfade', duration=transition_duration)
 
 		(ffmpeg.output(v, a, output_video_path, safe=0).run(overwrite_output=True))
-	final_output = os.path.abspath(
-		os.path.join(os.path.dirname(__file__), '..', 'processed_elements', 'concatenated_video', 'output_restructured_video.mp4')
-	)
+	# final_output = os.path.abspath(
+	# 	os.path.join(os.path.dirname(__file__), '..', 'processed_elements', 'concatenated_video', 'output_restructured_video.mp4')
+	# )
+	final_output = output_video_path
 	if os.path.exists(output_video_path):
 		os.rename(output_video_path, final_output)
 		logger.info(f'final output saved to {final_output}')
 	return final_output
+
+if __name__ == "__main__":
+	print(concat_clips_with_transition(input_video_clips=["/home/yogesh/Downloads/vid2.MOV", "/home/yogesh/Downloads/vid3.MOV"]))
