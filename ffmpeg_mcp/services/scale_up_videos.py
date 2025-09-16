@@ -5,6 +5,7 @@ import ffmpeg
 
 from ffmpeg_mcp.configs.logging_config import setup_logging
 from utils import validate_input_video_path
+from ffmpeg_mcp.exceptions import build_exception_message
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -61,11 +62,12 @@ def scale_up_videos(input_video_path: str, resolution: str = '1080p') -> str:
 
 	except ffmpeg.Error as e:
 		logger.error(f'FFmpeg error: {e.stderr.decode() if e.stderr else str(e)}')
-		raise RuntimeError(f'Failed to upscale video: {e}') from e
+		return build_exception_message(error_type=ffmpeg.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
+
 
 	except Exception as e:
 		logger.error(f'Unexpected error: {str(e)}')
-		raise RuntimeError(f'Upscaling failed: {e}') from e
+		return build_exception_message(error_type=Exception, message= f'An unexpected error occured: {str(e)}',)
 
 
 # if __name__ == '__main__':
