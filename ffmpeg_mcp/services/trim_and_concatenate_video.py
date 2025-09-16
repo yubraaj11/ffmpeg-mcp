@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import ffmpeg
-from utils import validate_input_video_path
 from ffmpeg_mcp.exceptions import build_exception_message
 from ffmpeg_mcp.configs.logging_config import setup_logging
 
@@ -12,32 +11,48 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 CURR_PATH = os.path.dirname(os.path.abspath(__file__))
-PROCESSED_VIDEO_PATH = os.path.join(CURR_PATH, '..', 'processed_elements', 'video_overlays')
+PROCESSED_VIDEO_PATH = os.path.join(CURR_PATH, '..', 'processed_elements', 'trim_and_concat')
 os.makedirs(PROCESSED_VIDEO_PATH, exist_ok=True)
 
+DEFAULT_WIDTH = 720
+DEFAULT_HEIGHT = 1280
+DEFAULT_X = 0
+DEFAULT_Y = 0
 
-@validate_input_video_path
-def __init__(self, target_resolution: str = '1280x720', output_dir: str = PROCESSED_VIDEO_PATH):
-    """
-    VideoEditor for trimming and concatenating multiple videos.
+#for checking multiple videos
+def validate_input_video_path(func):
+    def wrapper(*args, **kwargs):
+        inputs = kwargs.get('inputs')
+        if inputs is None and len(args) > 0:
+            inputs = args[0]
 
-    Args:
-        target_resolution (str): Resolution to scale all videos (e.g. '1280x720').
-        output_dir (str): Directory to save processed videos.
-    """
-    self.target_resolution = target_resolution
-    self.output_dir = Path(output_dir)
-    logger.info(f'Output directory set to: {self.output_dir.resolve()}')
+        if isinstance(inputs, list):
+            for idx, item in enumerate(inputs):
+                video_path = item.get('path')
+                if not Path(video_path).exists():
+                    raise FileNotFoundError(f"Video {idx + 1} not found: {video_path}")
+        elif isinstance(inputs, str):
+            if not Path(inputs).exists():
+                raise FileNotFoundError(f"Video not found: {inputs}")
+        else:
+            raise ValueError("Invalid input type for video path validation")
+
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 @validate_input_video_path
 def trim_and_concat_operation(
-    self,
     inputs: List[Dict[str, Optional[str]]],
     output_filename: str = 'final_output.mp4',
+    width: int = DEFAULT_WIDTH,
+    height: int = DEFAULT_HEIGHT,
+    x: int = DEFAULT_X,
+    y: int = DEFAULT_Y,
 ) -> Optional[str]:
     """
-    Trim and concatenate multiple videos (normalize resolution & format if needed).
+    Trim and concatenate multiple videos (portrait orientation, normalize format).
 
     Args:
         inputs (list[dict]): Each dict must have:
@@ -45,6 +60,10 @@ def trim_and_concat_operation(
             - 'start_time' (str, optional): start time in seconds
             - 'end_time' (str, optional): end time in seconds
         output_filename (str): Name of the final concatenated video file.
+        width (int): Width to scale each video (portrait).
+        height (int): Height to scale each video (portrait).
+        x (int): X position for overlay (default 0).
+        y (int): Y position for overlay (default 0).
 
     Returns:
         str: Path to the output video if successful.
@@ -57,8 +76,7 @@ def trim_and_concat_operation(
         logger.error('No input videos provided')
         raise ValueError('Provide at least one input video')
 
-    output_path = self.output_dir / output_filename
-    width, height = self.target_resolution.split('x')
+    output_path = Path(PROCESSED_VIDEO_PATH) / output_filename
 
     try:
         for idx, item in enumerate(inputs):
@@ -76,14 +94,16 @@ def trim_and_concat_operation(
                 inp = ffmpeg.input(video_path)
                 logger.info(f'Prepared full video {idx + 1}: {video_path}')
 
-            v = inp.video.filter('scale', width, height).filter('format', 'yuv420p')
+            v = inp.video.filter('scale', width, height, force_original_aspect_ratio='decrease') \
+                          .filter('pad', width, height, x, y) \
+                          .filter('format', 'yuv420p')
+
             v_streams.append(v)
             a_streams.append(inp.audio)
 
         streams = []
         for v, a in zip(v_streams, a_streams):
             streams.extend([v, a])
-
         joined = ffmpeg.concat(*streams, v=1, a=1).node
         v = joined[0]
         a = joined[1]
@@ -92,13 +112,21 @@ def trim_and_concat_operation(
         (
             ffmpeg.output(v, a, str(output_path), vcodec='libx264', acodec='aac')
             .overwrite_output()
-            .run(quiet=False)
+            .run(quiet=True)
         )
+
         logger.info(f'Final concatenated video saved at: {output_path.resolve()}')
         return str(output_path.resolve())
 
     except ffmpeg.Error as e:
-        return build_exception_message(error_type=ffmpeg.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
+        return build_exception_message(
+            error_type=ffmpeg.Error,
+            message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}',
+        )
     except Exception as e:
-        return build_exception_message(error_type=Exception, message=f'An Unexpected error has occurred: {str(e)}')
-        
+        return build_exception_message(
+            error_type=Exception,
+            message=f'An Unexpected error has occurred: {str(e)}',
+        )
+
+
