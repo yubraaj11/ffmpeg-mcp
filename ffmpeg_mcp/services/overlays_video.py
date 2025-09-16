@@ -18,7 +18,6 @@ os.makedirs(VIDEO_OVERLAY_PATH, exist_ok=True)
 
 @validate_input_video_path
 def overlays_video(
-    self,
     input_video_path: str,
     overlay_video_path: str,
     output_filename: str = 'output.mp4',
@@ -28,6 +27,7 @@ def overlays_video(
 ) -> str:
     """
     Overlay a video on top of another with simple positioning.
+    Loops the overlay video until the background video ends, trimming any extra frames.
 
     Args:
         input_video_path (str): Path to background video.
@@ -52,11 +52,20 @@ def overlays_video(
 
     logger.info(f'Processing overlay: {input_video} + {overlay_video} -> {output}')
 
+    bg_duration = float(ffmpeg.probe(str(input_video))['format']['duration'])
+    ov_duration = float(ffmpeg.probe(str(overlay_video))['format']['duration'])
+
+    loop_count = int(bg_duration // ov_duration)
+    if bg_duration % ov_duration != 0:
+        loop_count += 1
+
     bg_stream = ffmpeg.input(str(input_video))
-    ov_stream = ffmpeg.input(str(overlay_video))
+    ov_stream = ffmpeg.input(str(overlay_video), stream_loop=loop_count-1)
 
     if scale:
         ov_stream = ffmpeg.filter(ov_stream, 'scale', scale[0], scale[1])
+
+    ov_stream = ov_stream.filter('trim', duration=bg_duration).filter('setpts', 'PTS-STARTPTS')
 
     positions = {
         'top_left': ('10', '10'),
@@ -78,7 +87,9 @@ def overlays_video(
     else:
         out = ffmpeg.output(video, str(output))
 
-    out.run(overwrite_output=True)
+    out.run(overwrite_output=True, quiet=True)
     logger.info(f'Overlay complete: {output}')
 
     return str(output)
+
+
