@@ -77,6 +77,9 @@ This project provides a framework for handling media processing tasks using:
     - `input_video_clips`: List[str]
     - `transition_types` : str default `fade` - Type of transition to apply (e.g., fade, wipeleft, rectcrop, coverup, etc.).
     - `transition_duration`:float default `2`
+- `get_video_duration`
+  params:
+    - `input_video_path`: str
 
 ## Utilities
 
