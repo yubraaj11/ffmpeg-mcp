@@ -21,8 +21,7 @@ DEFAULT_Y = 0
 
 #for checking multiple videos
 def validate_input_video_path(func):
-    def wrapper(*args, **kwargs):
-        inputs = kwargs.get('inputs')
+    def wrapper(inputs, *args, **kwargs):
         if inputs is None and len(args) > 0:
             inputs = args[0]
 
@@ -37,7 +36,7 @@ def validate_input_video_path(func):
         else:
             raise ValueError("Invalid input type for video path validation")
 
-        return func(*args, **kwargs)
+        return func(inputs, *args, **kwargs)
 
     return wrapper
 
