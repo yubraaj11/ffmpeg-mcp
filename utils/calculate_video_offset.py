@@ -19,7 +19,7 @@ def calculate_video_offset(input_video_path: str, transition_duration: float) ->
 	"""
 	video_duration = get_video_duration(input_video_path=input_video_path)
 	try:
-		offset_duration = video_duration - transition_duration
+		offset_duration = max(video_duration - transition_duration, 0)
 		return offset_duration
 	except Exception as e:
 		logger.error('Error in calculating offset duration')
