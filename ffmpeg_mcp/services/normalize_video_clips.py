@@ -6,6 +6,7 @@ import ffmpeg
 from tqdm import tqdm
 
 from ffmpeg_mcp.configs import setup_logging
+from ffmpeg_mcp.exceptions import build_exception_message
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -89,7 +90,10 @@ def get_normalized_clips(
 	"""
 	width, height = resolution
 
-	clips = sorted(input_video_clips)
+	if not input_video_clips:
+		logger.error("Couldn't find videos to normalize")
+		build_exception_message(error_type=ValueError, message="Couldn't find videos to normalize")
+	clips = input_video_clips
 
 	temp_files = [os.path.join(video_clip_path, f'normalized_{i}.mp4') for i in range(len(clips))]
 
