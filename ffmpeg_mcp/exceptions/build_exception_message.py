@@ -19,6 +19,6 @@ def build_exception_message(
 		'status': 'ERROR',
 		'error_type': error_type.__name__,
 		'message': message,
-		'time': datetime.datetime.now(datetime.timezone.utc).isoformat()
+		'time': datetime.datetime.now(datetime.timezone.utc).isoformat(),
 	}
 	return json.dumps(exception_message, indent=2)

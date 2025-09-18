@@ -57,9 +57,9 @@ def scale_video(input_video_path: str, resolution: str = '1080p') -> str:
 		logger.info(f'{resolution} video saved at: {output_video_path}')
 		return output_video_path
 
-	except ffmpeg.Error as e:
+	except ffmpeg._run.Error as e:
 		logger.error(f'FFmpeg error: {e.stderr.decode() if e.stderr else str(e)}')
-		return build_exception_message(error_type=ffmpeg.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
+		return build_exception_message(error_type=ffmpeg._run.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
 
 	except Exception as e:
 		logger.error(f'Unexpected error: {str(e)}')

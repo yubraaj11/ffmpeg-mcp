@@ -38,7 +38,7 @@ def extract_audio(input_video_path: str):
 		)
 		logger.info('Finished audio extraction process...')
 		return audio_file_path
-	except ffmpeg.Error as e:
-		return build_exception_message(error_type=ffmpeg.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
+	except ffmpeg._run.Error as e:
+		return build_exception_message(error_type=ffmpeg._run.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
 	except Exception as e:
 		return build_exception_message(error_type=Exception, message=f'An Unexpected error has occurred: {str(e)}')
