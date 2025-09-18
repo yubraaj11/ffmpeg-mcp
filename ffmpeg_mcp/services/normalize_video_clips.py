@@ -59,9 +59,9 @@ def normalize_single_clip(clip, output_path, resolution, frame_rate, crf, audio_
 		)
 		logger.info(f'Normalized {clip} → {output_path}')
 		return output_path
-	except ffmpeg.Error as e:
+	except ffmpeg._run.Error as e:
 		logger.error(f'Error normalizing {clip}: {e.stderr.decode()}')
-		return None
+		return build_exception_message(error_type=ffmpeg._run.Error, message='Error normalizing.')
 
 
 def get_normalized_clips(

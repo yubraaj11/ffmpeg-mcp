@@ -29,4 +29,3 @@ def get_video_metadata(input_video_path: str):
 		return build_exception_message(error_type=ffmpeg._run.Error, message=f'FFmpeg command failed: {e.stderr.decode("utf-8")}')
 	except Exception as e:
 		return build_exception_message(error_type=Exception, message=f'Unexpected error: {str(e)}')
-

@@ -3,7 +3,6 @@ import logging
 
 from ffmpeg_mcp.configs import setup_logging
 from ffmpeg_mcp.exceptions import build_exception_message
-
 from ffmpeg_mcp.services.get_video_metadata import get_video_metadata
 
 setup_logging()
@@ -26,4 +25,4 @@ def calculate_video_offset(input_video_path: str, transition_duration: float):
 		return offset_duration
 	except Exception as e:
 		logger.error('Error in calculating offset duration')
-		build_exception_message(error_type=Exception, message=f'Error in calculating offest duration: {str(e)}')
+		return build_exception_message(error_type=Exception, message=f'Error in calculating offest duration: {str(e)}')

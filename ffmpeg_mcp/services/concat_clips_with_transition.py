@@ -10,7 +10,6 @@ from ffmpeg_mcp.configs import setup_logging
 from ffmpeg_mcp.exceptions import build_exception_message
 from ffmpeg_mcp.services import get_video_metadata
 from ffmpeg_mcp.services.normalize_video_clips import get_normalized_clips
-
 from utils import calculate_video_offset
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -62,8 +61,7 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 	os.makedirs(output_video_path, exist_ok=True)
 
 	if len(input_video_clips) < 2:
-		logger.error('Need at lest two video clips to concat')
-		return None
+		return build_exception_message(error_type=ValueError, message='Please provide at least two clips')
 
 	get_normalized_clips(input_video_clips=input_video_clips)
 
@@ -95,9 +93,8 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 			temp_output = output_video_path.replace('.mp4', f'_step_{i}.mp4')
 			(ffmpeg.output(v, a, temp_output, safe=0).run(overwrite_output=True, quiet=True))
 			output_video_path = temp_output
-		except ffmpeg.Error as e:
-			logger.error(f'Error occured in ffmpeg: {str(e)}')
-			build_exception_message(error_type=ffmpeg.Error, message=f'Error occured while concatenating video: {str(e)}')
+		except ffmpeg._run.Error as e:
+			build_exception_message(error_type=ffmpeg._run.Error, message=f'Error occured while concatenating video: {str(e)}')
 
 	if os.path.exists(output_video_path):
 		os.rename(output_video_path, final_output_path)
@@ -115,6 +112,4 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 
 		return final_output_path
 	else:
-		logger.error(f'Output video not found: {output_video_path}')
-		return None
-
+		return build_exception_message(error_type=RuntimeError, message=f'Output video not found {output_video_path}')

@@ -14,6 +14,7 @@ def validate_input_video_path(func):
 	"""
 	Decorator to check if the video path exists, is non-empty, and is valid.
 	"""
+
 	@wraps(func)
 	def wrapper(input_video_path, *args, **kwargs):
 		if not os.path.isfile(input_video_path):
