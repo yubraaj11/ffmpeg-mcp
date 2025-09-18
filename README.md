@@ -74,7 +74,19 @@ This project provides a framework for handling media processing tasks using:
   - params:
     - `input_video_path`: str
     - `resolution`: Optional[str]
----
+- `normalize_video_clips`:
+  - params:
+    - `input_video_clips`: List[str]
+    - `resolution`:tuple default `(1280, 720)`
+    - `frame_rate`: int default `30`
+    - `crf`: int default `23`
+    - `audio_bitrate`: str default `128k`
+    - `preset`: str default `fast`
+- `concat_clips_with_transition`
+  - params:
+    - `input_video_clips`: List[str]
+    - `transition_types` : str default `fade` - Type of transition to apply (e.g., fade, wipeleft, rectcrop, coverup, etc.).
+    - `transition_duration`:float default `2`
 
 ## Utilities
 
