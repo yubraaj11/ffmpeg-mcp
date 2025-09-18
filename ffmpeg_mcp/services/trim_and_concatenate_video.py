@@ -117,9 +117,9 @@ def trim_and_concat_operation(
         logger.info(f'Final concatenated video saved at: {output_path.resolve()}')
         return str(output_path.resolve())
 
-    except ffmpeg.Error as e:
+    except ffmpeg._run.Error as e:
         return build_exception_message(
-            error_type=ffmpeg.Error,
+            error_type=ffmpeg._run.Error,
             message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}',
         )
     except Exception as e:

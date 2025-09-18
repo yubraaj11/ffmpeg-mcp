@@ -60,8 +60,8 @@ def clip_video(input_video_path: str, start_timestamp: float = 0.0, duration: fl
 		logger.info('Finished video clipping...')
 		return clip_file_path
 
-	except ffmpeg.Error as e:
-		return build_exception_message(error_type=ffmpeg.Error, message=f'FFmpeg command failed: {e.stderr.decode("utf-8")}')
+	except ffmpeg._run.Error as e:
+		return build_exception_message(error_type=ffmpeg._run.Error, message=f'FFmpeg command failed: {e.stderr.decode("utf-8")}')
 	except Exception as e:
 		return build_exception_message(error_type=Exception, message=f'Unexpected error: {str(e)}')
 

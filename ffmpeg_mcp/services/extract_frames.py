@@ -52,7 +52,7 @@ def extract_frames(input_video_path: str, number_of_frames: Optional[int] = None
 		metadata = get_video_metadata(input_video_path)
 		metadata_streams = json.loads(metadata).get('streams', [])
 		if not metadata_streams:
-			raise build_exception_message(error_type=ValueError, message='No video streams found in the file.')
+			return build_exception_message(error_type=ValueError, message='No video streams found in the file.')
 
 		stream = metadata_streams[0]
 		total_duration = float(stream.get('duration') or json.loads(metadata)['format']['duration'])
@@ -111,7 +111,7 @@ def extract_frames(input_video_path: str, number_of_frames: Optional[int] = None
 
 		logger.info('Finished frame extraction process...')
 		return frame_files
-	except ffmpeg.Error as e:
-		return build_exception_message(error_type=ffmpeg.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
+	except ffmpeg._run.Error as e:
+		return build_exception_message(error_type=e, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
 	except Exception as e:
 		return build_exception_message(error_type=Exception, message=f'An Unexpected error has occurred: {str(e)}')

@@ -60,9 +60,9 @@ def crop_video(input_video_path: str, safe_crop: bool = False, height: int = 480
 
 		logger.info('Finished video cropping...')
 		return cropped_video_path
-	except ffmpeg.Error as e:
+	except ffmpeg._run.Error as e:
 		return build_exception_message(
-			error_type=ffmpeg.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8") if e.stderr else str(e)}'
+			error_type=ffmpeg._run.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8") if e.stderr else str(e)}'
 		)
 	except Exception as e:
 		return build_exception_message(error_type=Exception, message=f'An unexpected error occurred: {str(e)}')
