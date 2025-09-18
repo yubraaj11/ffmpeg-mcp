@@ -1,25 +1,33 @@
+import json
 import logging
 import os
+import shutil
 from typing import List
 
 import ffmpeg
 
 from ffmpeg_mcp.configs import setup_logging
 from ffmpeg_mcp.exceptions import build_exception_message
+from ffmpeg_mcp.services import get_video_metadata
 from ffmpeg_mcp.services.normalize_video_clips import get_normalized_clips
-from utils import calculate_video_offset, get_video_duration
+
+from utils import calculate_video_offset
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-# output_video_path = os.path.join(base_dir, '..', 'processed_elements', 'concatenated_video', 'final_edited_video.mp4')
 video_clip_path = os.path.join(base_dir, '..', 'processed_elements', 'normalized_video_clips')
 
-# os.makedirs(os.path.dirname(output_video_path), exist_ok=True)
+final_output_path = os.path.abspath(
+	os.path.join(base_dir, '..', 'processed_elements', 'concatenated_video', 'output_concatenated_video.mp4')
+)
+
+os.makedirs(os.path.dirname(final_output_path), exist_ok=True)
+
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def concat_clips_with_transition(input_video_clips: List[str], transition_type: str = 'fade', transition_duration: float = 0.5) -> str:
+def concat_clips_with_transition(input_video_clips: List[str], transition_type: str = 'wipeleft', transition_duration: float = 2) -> str:
 	"""
 	Concatenate multiple video clips with transitions.
 
@@ -50,8 +58,8 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 	        The absolute path to the final concatenated video with transitions applied.
 	"""
 
-	output_video_path = os.path.join(base_dir, '..', 'processed_elements', 'concatenated_video', 'final_edited_video.mp4')
-	os.makedirs(os.path.dirname(output_video_path), exist_ok=True)
+	output_video_path = os.path.join(base_dir, '..', 'processed_elements', 'Intermediate_files', 'final_edited_video.mp4')
+	os.makedirs(output_video_path, exist_ok=True)
 
 	if len(input_video_clips) < 2:
 		logger.error('Need at lest two video clips to concat')
@@ -64,8 +72,10 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 		clip_1 = video_list[0] if i == 1 else output_video_path
 		clip_2 = video_list[i]
 
-		clip_1_duration = get_video_duration(input_video_path=clip_1)
-		clip_2_duration = get_video_duration(input_video_path=clip_2)
+		metadata = get_video_metadata(input_video_path=clip_1)
+		clip_1_duration = json.loads(metadata)['format']['duration']
+		metadata = get_video_metadata(input_video_path=clip_2)
+		clip_2_duration = json.loads(metadata)['format']['duration']
 
 		logger.info(f'clip_1 ({i - 1}) duration: {clip_1_duration}s, clip_2 ({i}) duration: {clip_2_duration}s')
 
@@ -88,10 +98,30 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 		except ffmpeg.Error as e:
 			logger.error(f'Error occured in ffmpeg: {str(e)}')
 			build_exception_message(error_type=ffmpeg.Error, message=f'Error occured while concatenating video: {str(e)}')
-	final_output = os.path.abspath(
-		os.path.join(os.path.dirname(__file__), '..', 'processed_elements', 'concatenated_video', 'output_restructured_video.mp4')
-	)
+
 	if os.path.exists(output_video_path):
-		os.rename(output_video_path, final_output)
-		logger.info(f'final output saved to {final_output}')
-	return final_output
+		os.rename(output_video_path, final_output_path)
+		logger.info(f'Final concatenated video saved to: {final_output_path}')
+
+		# Clean up: remove normalized clips and intermediate files
+		if os.path.exists(video_clip_path):
+			shutil.rmtree(video_clip_path)
+			logger.info(f'Deleted normalized clips folder: {video_clip_path}')
+
+		intermediate_dir = os.path.join(base_dir, '..', 'processed_elements', 'Intermediate_files')
+		if os.path.exists(intermediate_dir):
+			shutil.rmtree(intermediate_dir)
+			logger.info(f'Deleted intermediate files folder: {intermediate_dir}')
+
+		return final_output_path
+	else:
+		logger.error(f'Output video not found: {output_video_path}')
+		return None
+
+
+if __name__ == '__main__':
+	print(
+		concat_clips_with_transition(
+			input_video_clips=['/home/yogesh/Downloads/vid2.MOV', '/home/yogesh/Downloads/vid3.MOV', '/home/yogesh/Downloads/vid4.MOV']
+		)
+	)
