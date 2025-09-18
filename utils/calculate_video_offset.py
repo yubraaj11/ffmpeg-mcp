@@ -4,7 +4,6 @@ import logging
 from ffmpeg_mcp.configs import setup_logging
 from ffmpeg_mcp.exceptions import build_exception_message
 
-# from ffmpeg_mcp.services import get_video_metadata
 from ffmpeg_mcp.services.get_video_metadata import get_video_metadata
 
 setup_logging()
@@ -20,7 +19,6 @@ def calculate_video_offset(input_video_path: str, transition_duration: float):
 	Returns:
 	    float: offset duration of the video in Seconds(including milliseconds)
 	"""
-	# video_duration = get_video_duration(input_video_path=input_video_path)
 	metadata = get_video_metadata(input_video_path=input_video_path)
 	video_duration = json.loads(metadata)['format']['duration']
 	try:
