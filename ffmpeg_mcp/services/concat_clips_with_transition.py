@@ -27,7 +27,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def concat_clips_with_transition(input_video_clips: List[str], transition_type: str = 'wipeleft', transition_duration: float = 2) -> str:
+def concat_clips_with_transition(input_video_clips: List[str], transition_type: str = 'fade', transition_duration: float = 2) -> str:
 	"""
 	Concatenate multiple video clips with transitions.
 
