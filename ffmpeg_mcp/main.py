@@ -12,6 +12,7 @@ from ffmpeg_mcp.services import (
 	overlays_video,
 	scale_video,
 	trim_and_concat_operation,
+	get_video_metadata,
 )
 
 setup_logging()
@@ -26,6 +27,7 @@ mcp.tool(name_or_fn=overlay_image)
 mcp.tool(name_or_fn=overlays_video)
 # mcp.tool(name_or_fn=trim_and_concat_operation)
 mcp.tool(name_or_fn=scale_video)
+mcp.tool(name_or_fn=get_video_metadata)
 
 
 def main():
