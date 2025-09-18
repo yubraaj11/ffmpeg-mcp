@@ -47,16 +47,7 @@ This project provides a framework for handling media processing tasks using:
 
 ### 3. Video Scaling & Resizing
 
-* **`scale_video`** (method 1)
-
-  * params:
-
-    * `input_video_path`: str
-    * `height`: Optional
-    * `width`: Optional
-    * `keep_aspect_ratio`: bool
-
-* **`scale_video`** (method 2)
+* **`scale_video`**
 
   * params:
 
