@@ -118,10 +118,3 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 		logger.error(f'Output video not found: {output_video_path}')
 		return None
 
-
-if __name__ == '__main__':
-	print(
-		concat_clips_with_transition(
-			input_video_clips=['/home/yogesh/Downloads/vid2.MOV', '/home/yogesh/Downloads/vid3.MOV', '/home/yogesh/Downloads/vid4.MOV']
-		)
-	)
