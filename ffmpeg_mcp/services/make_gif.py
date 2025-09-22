@@ -19,7 +19,7 @@ os.makedirs(GIF_ROOT_DIR, exist_ok=True)
 
 
 @validate_input_video_path
-def make_gif(input_video_path: str, start_timestamp: float = 0.0, duration: float = 4.0):
+def make_gif(input_video_path: str, start_timestamp: float = 0.0, duration: float = 2.0):
 	"""
 	Make gif using video path provided by user.
 
