@@ -1,3 +1,4 @@
+![ffmpeg-mcp](/statics/ffmpeg-mcp.png)
 
 # ffmpeg-mcp 🎬⚡
 
