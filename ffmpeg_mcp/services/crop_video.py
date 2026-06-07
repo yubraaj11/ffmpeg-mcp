@@ -6,7 +6,7 @@ from uuid import uuid4
 import ffmpeg
 
 from ffmpeg_mcp.exceptions import build_exception_message
-from ffmpeg_mcp.services import get_video_metadata
+from ffmpeg_mcp.services.get_video_metadata import get_video_metadata
 
 logger = logging.getLogger(__name__)
 

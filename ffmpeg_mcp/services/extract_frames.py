@@ -9,7 +9,7 @@ import ffmpeg
 
 from ffmpeg_mcp.configs import setup_logging
 from ffmpeg_mcp.exceptions import build_exception_message
-from ffmpeg_mcp.services import get_video_metadata
+from ffmpeg_mcp.services.get_video_metadata import get_video_metadata
 from utils import validate_input_video_path
 
 setup_logging()
@@ -112,6 +112,6 @@ def extract_frames(input_video_path: str, number_of_frames: Optional[int] = None
 		logger.info('Finished frame extraction process...')
 		return frame_files
 	except ffmpeg._run.Error as e:
-		return build_exception_message(error_type=e, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
+		return build_exception_message(error_type=ffmpeg._run.Error, message=f'FFmpeg Command Failed: {e.stderr.decode("utf-8")}')
 	except Exception as e:
 		return build_exception_message(error_type=Exception, message=f'An Unexpected error has occurred: {str(e)}')

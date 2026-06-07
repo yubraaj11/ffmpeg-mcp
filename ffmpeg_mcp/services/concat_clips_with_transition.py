@@ -8,7 +8,7 @@ import ffmpeg
 
 from ffmpeg_mcp.configs import setup_logging
 from ffmpeg_mcp.exceptions import build_exception_message
-from ffmpeg_mcp.services import get_video_metadata
+from ffmpeg_mcp.services.get_video_metadata import get_video_metadata
 from ffmpeg_mcp.services.normalize_video_clips import get_normalized_clips
 from utils import calculate_video_offset
 
@@ -58,7 +58,7 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 	"""
 
 	output_video_path = os.path.join(base_dir, '..', 'processed_elements', 'Intermediate_files', 'final_edited_video.mp4')
-	os.makedirs(output_video_path, exist_ok=True)
+	os.makedirs(os.path.dirname(output_video_path), exist_ok=True)
 
 	if len(input_video_clips) < 2:
 		return build_exception_message(error_type=ValueError, message='Please provide at least two clips')
