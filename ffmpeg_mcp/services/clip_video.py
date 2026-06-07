@@ -7,7 +7,7 @@ import ffmpeg
 
 from ffmpeg_mcp.configs import setup_logging
 from ffmpeg_mcp.exceptions import build_exception_message
-from ffmpeg_mcp.services import get_video_metadata
+from ffmpeg_mcp.services.get_video_metadata import get_video_metadata
 from utils import validate_input_video_path
 
 setup_logging()
