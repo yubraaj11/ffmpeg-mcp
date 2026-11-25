@@ -39,3 +39,6 @@ notebooks/
 # Experiments
 */experiments/
 *processed_elements/
+# Build artifacts
+dist/
+build/

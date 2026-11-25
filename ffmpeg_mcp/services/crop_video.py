@@ -5,13 +5,14 @@ from uuid import uuid4
 
 import ffmpeg
 
+from ffmpeg_mcp.core.paths import PROCESSED_ROOT
 from ffmpeg_mcp.exceptions import build_exception_message
 from ffmpeg_mcp.services.get_video_metadata import get_video_metadata
 
 logger = logging.getLogger(__name__)
 
 CURR_PATH = os.path.dirname(os.path.abspath(__file__))
-CROPPED_VIDEO_DIR = os.path.join(CURR_PATH, '..', 'processed_elements', 'cropped_videos')
+CROPPED_VIDEO_DIR = os.path.join(PROCESSED_ROOT, 'cropped_videos')
 
 os.makedirs(CROPPED_VIDEO_DIR, exist_ok=True)
 

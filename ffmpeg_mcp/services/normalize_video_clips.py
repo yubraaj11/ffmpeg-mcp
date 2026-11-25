@@ -6,13 +6,14 @@ import ffmpeg
 from tqdm import tqdm
 
 from ffmpeg_mcp.configs import setup_logging
+from ffmpeg_mcp.core.paths import PROCESSED_ROOT
 from ffmpeg_mcp.exceptions import build_exception_message
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-video_clip_path = os.path.join(base_dir, '..', 'processed_elements', 'normalized_video_clips')
+video_clip_path = os.path.join(PROCESSED_ROOT, 'normalized_video_clips')
 os.makedirs(video_clip_path, exist_ok=True)
 max_workers = os.cpu_count() or 4
 

@@ -3,7 +3,9 @@ import os
 
 from fastmcp import FastMCP
 
+from ffmpeg_mcp import __version__
 from ffmpeg_mcp.configs import setup_logging
+from ffmpeg_mcp.core.paths import PROCESSED_ROOT
 from ffmpeg_mcp.services import (
 	add_background_music,
 	add_captions,
@@ -39,10 +41,16 @@ from ffmpeg_mcp.services import (
 setup_logging()
 logger = logging.getLogger(__name__)
 
-mcp = FastMCP(name='ffmpeg-mcp', version='0.1.0')
+INSTRUCTIONS = (
+	'AI video editor powered by FFmpeg. For a finished Reel/Short/TikTok in one call use make_reel_from_clips, '
+	'beat_sync_montage or talking_head_reel; for full control build a timeline with render_composition '
+	'(call get_editing_capabilities first for styles, transitions and formats, and use dry_run to check timing). '
+	'Single-effect tools (captions, text, zoom, speed, color, music, reframe, export) work on one file at a time. '
+	'Use render_preview to visually check results. All paths must be absolute local paths. '
+	f'Outputs are written under {PROCESSED_ROOT}.'
+)
 
-CURR_PATH = os.path.dirname(os.path.abspath(__file__))
-PROCESSED_ELEMENTS = os.path.join(CURR_PATH, 'processed_elements')
+mcp = FastMCP(name='ffmpeg-mcp', version=__version__, instructions=INSTRUCTIONS)
 
 mcp.tool(name_or_fn=extract_frames)
 mcp.tool(name_or_fn=extract_audio)
@@ -80,8 +88,8 @@ mcp.tool(name_or_fn=talking_head_reel)
 
 
 def main():
-	os.makedirs(PROCESSED_ELEMENTS, exist_ok=True)
-	logger.info('Server running...')
+	os.makedirs(PROCESSED_ROOT, exist_ok=True)
+	logger.info(f'ffmpeg-mcp {__version__} running; outputs in {PROCESSED_ROOT}')
 	mcp.run(transport='stdio')
 
 

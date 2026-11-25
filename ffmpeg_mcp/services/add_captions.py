@@ -10,7 +10,7 @@ from ffmpeg_mcp.core.runner import encode, success, tool_errors
 from ffmpeg_mcp.core.styles import TextStyleName, get_style
 from ffmpeg_mcp.core.transcribe import transcribe
 from ffmpeg_mcp.effects.text import Position, overlay_image_track
-from utils import validate_input_video_path
+from ffmpeg_mcp.utils import validate_input_video_path
 
 
 @tool_errors

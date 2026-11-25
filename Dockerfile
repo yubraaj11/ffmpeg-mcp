@@ -7,9 +7,12 @@ RUN apt-get update \
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
-COPY pyproject.toml uv.lock .python-version ./
+COPY pyproject.toml uv.lock .python-version README.md LICENSE ./
 RUN uv sync --frozen --no-dev --no-install-project
 
-COPY . .
-ENV PYTHONPATH=/app
-CMD ["uv", "run", "--no-dev", "python", "-m", "ffmpeg_mcp.main"]
+COPY ffmpeg_mcp ./ffmpeg_mcp
+RUN uv sync --frozen --no-dev
+
+ENV FFMPEG_MCP_OUTPUT_DIR=/data
+VOLUME ["/data"]
+CMD ["uv", "run", "--frozen", "--no-dev", "ffmpeg-mcp-studio"]

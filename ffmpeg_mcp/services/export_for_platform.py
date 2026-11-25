@@ -7,7 +7,7 @@ from ffmpeg_mcp.core.probe import probe_media
 from ffmpeg_mcp.core.runner import run, success, tool_errors
 from ffmpeg_mcp.effects.audio import loudness_normalize, silent_audio
 from ffmpeg_mcp.effects.reframe import ReframeMode, reframe
-from utils import validate_input_video_path
+from ffmpeg_mcp.utils import validate_input_video_path
 
 
 @tool_errors

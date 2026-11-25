@@ -8,7 +8,7 @@ from ffmpeg_mcp.core.runner import encode, tool_errors
 from ffmpeg_mcp.core.styles import TextStyleName, get_style
 from ffmpeg_mcp.core.text_render import render_text_image, save_text_png
 from ffmpeg_mcp.effects.text import Position, TextAnimation, overlay_png
-from utils import validate_input_video_path
+from ffmpeg_mcp.utils import validate_input_video_path
 
 
 @tool_errors

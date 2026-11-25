@@ -8,13 +8,14 @@ from uuid import uuid4
 import ffmpeg
 
 from ffmpeg_mcp.configs.logging_config import setup_logging
+from ffmpeg_mcp.core.paths import PROCESSED_ROOT
 from ffmpeg_mcp.exceptions import build_exception_message
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 CURR_PATH = os.path.dirname(os.path.abspath(__file__))
-PROCESSED_VIDEO_PATH = os.path.join(CURR_PATH, '..', 'processed_elements', 'trim_and_concat')
+PROCESSED_VIDEO_PATH = os.path.join(PROCESSED_ROOT, 'trim_and_concat')
 os.makedirs(PROCESSED_VIDEO_PATH, exist_ok=True)
 
 DEFAULT_WIDTH = 720

@@ -7,17 +7,16 @@ from typing import List
 import ffmpeg
 
 from ffmpeg_mcp.configs import setup_logging
+from ffmpeg_mcp.core.paths import PROCESSED_ROOT
 from ffmpeg_mcp.exceptions import build_exception_message
 from ffmpeg_mcp.services.get_video_metadata import get_video_metadata
 from ffmpeg_mcp.services.normalize_video_clips import get_normalized_clips
-from utils import calculate_video_offset
+from ffmpeg_mcp.utils import calculate_video_offset
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-video_clip_path = os.path.join(base_dir, '..', 'processed_elements', 'normalized_video_clips')
+video_clip_path = os.path.join(PROCESSED_ROOT, 'normalized_video_clips')
 
-final_output_path = os.path.abspath(
-	os.path.join(base_dir, '..', 'processed_elements', 'concatenated_video', 'output_concatenated_video.mp4')
-)
+final_output_path = os.path.abspath(os.path.join(PROCESSED_ROOT, 'concatenated_video', 'output_concatenated_video.mp4'))
 
 os.makedirs(os.path.dirname(final_output_path), exist_ok=True)
 
@@ -57,7 +56,7 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 	        The absolute path to the final concatenated video with transitions applied.
 	"""
 
-	output_video_path = os.path.join(base_dir, '..', 'processed_elements', 'Intermediate_files', 'final_edited_video.mp4')
+	output_video_path = os.path.join(PROCESSED_ROOT, 'Intermediate_files', 'final_edited_video.mp4')
 	os.makedirs(os.path.dirname(output_video_path), exist_ok=True)
 
 	if len(input_video_clips) < 2:
@@ -105,7 +104,7 @@ def concat_clips_with_transition(input_video_clips: List[str], transition_type: 
 			shutil.rmtree(video_clip_path)
 			logger.info(f'Deleted normalized clips folder: {video_clip_path}')
 
-		intermediate_dir = os.path.join(base_dir, '..', 'processed_elements', 'Intermediate_files')
+		intermediate_dir = os.path.join(PROCESSED_ROOT, 'Intermediate_files')
 		if os.path.exists(intermediate_dir):
 			shutil.rmtree(intermediate_dir)
 			logger.info(f'Deleted intermediate files folder: {intermediate_dir}')

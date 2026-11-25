@@ -1,13 +1,20 @@
 <div align="center">
 
-![ffmpeg-mcp](statics/ffmpeg-mcp.png)
+![ffmpeg-mcp: AI video editor MCP server powered by FFmpeg](https://raw.githubusercontent.com/yubraaj11/ffmpeg-mcp/main/statics/ffmpeg-mcp.png)
 
 # ffmpeg-mcp 🎬⚡
 
-**Edit video and audio by just talking to your AI assistant.**
+**The AI video editor for Claude, Cursor and every MCP client. Edit, caption and produce videos just by asking.**
 
-`ffmpeg-mcp` is a [Model Context Protocol](https://modelcontextprotocol.io) server that puts the full power of **FFmpeg** behind a clean set of tools your LLM can call — clip, crop, scale, overlay, concatenate with transitions, extract frames/audio, make GIFs, and more. No command-line flags to memorize.
+`ffmpeg-mcp` is a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that turns **FFmpeg** into an AI video editing toolkit your LLM can drive. It covers **automatic captions and subtitles** (local Whisper speech-to-text), **Instagram Reels, YouTube Shorts and TikTok** formatting, **beat-synced montages**, **jump cuts**, punch-in zooms, speed ramps, transitions, colour grading, background music with ducking, and **one-call video production** from raw clips to an upload-ready MP4. It also has the classic tools: clip, crop, scale, overlay, concatenate, extract frames and audio, and make GIFs. No command-line flags to memorize.
 
+```bash
+uvx ffmpeg-mcp-studio   # that's it - add it to your MCP client (see Quick Start)
+```
+
+[![PyPI](https://img.shields.io/pypi/v/ffmpeg-mcp-studio.svg)](https://pypi.org/project/ffmpeg-mcp-studio/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/yubraaj11/ffmpeg-mcp/blob/main/LICENSE)
+[![MCP](https://img.shields.io/badge/MCP-server-black.svg)](https://modelcontextprotocol.io)
 [![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/)
 [![FastMCP](https://img.shields.io/badge/built%20with-FastMCP-6E56CF.svg)](https://github.com/jlowin/fastmcp)
 [![FFmpeg](https://img.shields.io/badge/powered%20by-FFmpeg-007808.svg)](https://ffmpeg.org/)
@@ -15,6 +22,8 @@
 [![Stars](https://img.shields.io/github/stars/yubraaj11/ffmpeg-mcp?style=social)](https://github.com/yubraaj11/ffmpeg-mcp)
 
 </div>
+
+<!-- mcp-name: io.github.yubraaj11/ffmpeg-mcp -->
 
 ---
 
@@ -32,6 +41,17 @@ FFmpeg is incredibly powerful and incredibly hard to remember. `ffmpeg-mcp` hand
 - 🧱 **29 focused tools** — composable building blocks instead of one giant black box
 - ✅ **Input validation built in** — paths are checked for existence, emptiness, and validity before FFmpeg runs
 - 🧩 **Hackable** — add a new tool by writing one function and registering it
+
+---
+
+## 🎯 Use Cases
+
+- **Talking-head Reels & Shorts**: vertical crop, karaoke-style animated captions, punch-in zooms and automatic jump cuts from one recording.
+- **Beat-synced montages**: travel, event and product clips cut exactly on the beat of your song.
+- **Podcast & interview clips**: transcribe, cut highlights, burn in subtitles and export for every platform.
+- **Product promos & ads**: titles, logo watermark, colour look, music and transitions in one timeline.
+- **Batch content repurposing**: turn landscape YouTube footage into 9:16 TikTok/Reels/Shorts with blurred-background fill.
+- **Everyday FFmpeg chores**: trim, crop, scale, GIFs, frame grabs and audio extraction, by just asking.
 
 ---
 
@@ -101,9 +121,9 @@ Example `render_composition` spec:
 }
 ```
 
-Times: clip `start`/`end` and `speed_ramp` are in source seconds; `zoom` is in seconds within the clip's output; text/image overlays are on the final timeline. Auto-generated transcripts are saved to `processed_elements/transcripts/`. Fix any misheard words in the JSON and pass it back as `captions.transcript_path`.
+Times: clip `start`/`end` and `speed_ramp` are in source seconds; `zoom` is in seconds within the clip's output; text/image overlays are on the final timeline. Auto-generated transcripts are saved to the `transcripts/` folder in the output directory. Fix any misheard words in the JSON and pass it back as `captions.transcript_path`.
 
-> Text and captions are rendered with Pillow using the bundled [Montserrat](statics/fonts/OFL.txt) font, so they work even on FFmpeg builds without `libass`/`freetype`. The first caption run downloads the faster-whisper model (~145 MB for `base`).
+> Text and captions are rendered with Pillow using the bundled [Montserrat](https://github.com/yubraaj11/ffmpeg-mcp/blob/main/ffmpeg_mcp/assets/fonts/OFL.txt) font, so they work even on FFmpeg builds without `libass`/`freetype`. The first caption run downloads the faster-whisper model (~145 MB for `base`).
 
 ---
 
@@ -123,31 +143,38 @@ ffmpeg -version
 
 ## 🚀 Quick Start
 
-### 1. Clone & install
+### Option A: run with `uvx` (recommended)
+
+No clone needed. [`uvx`](https://docs.astral.sh/uv/guides/tools/) downloads and runs the server in an isolated environment:
 
 ```bash
-git clone https://github.com/yubraaj11/ffmpeg-mcp.git
-cd ffmpeg-mcp
-uv sync --frozen
+uvx ffmpeg-mcp-studio
 ```
 
-### 2. Connect it to your MCP client
-
-Point your client at the server using the snippets below. Replace `/path/to/ffmpeg-mcp` with the **absolute path** to your clone.
+Add it to your MCP client:
 
 <details open>
-<summary><b>Claude Desktop / Cursor</b> (<code>claude_desktop_config.json</code> or <code>.cursor/mcp.json</code>)</summary>
+<summary><b>Claude Desktop / Cursor / Windsurf</b> (<code>claude_desktop_config.json</code>, <code>.cursor/mcp.json</code>, ...)</summary>
 
 ```json
 {
   "mcpServers": {
     "ffmpeg-mcp": {
-      "command": "uv",
-      "args": ["--directory", "/path/to/ffmpeg-mcp/ffmpeg_mcp", "run", "main.py"],
-      "env": { "PYTHONPATH": "/path/to/ffmpeg-mcp" }
+      "command": "uvx",
+      "args": ["ffmpeg-mcp-studio"],
+      "env": { "FFMPEG_MCP_OUTPUT_DIR": "/Users/you/Movies/ffmpeg-mcp" }
     }
   }
 }
+```
+
+</details>
+
+<details>
+<summary><b>Claude Code</b></summary>
+
+```bash
+claude mcp add ffmpeg-mcp -- uvx ffmpeg-mcp-studio
 ```
 
 </details>
@@ -159,12 +186,9 @@ Point your client at the server using the snippets below. Replace `/path/to/ffmp
 {
   "mcpServers": {
     "ffmpeg-mcp": {
-      "autoApprove": [],
-      "disabled": false,
-      "timeout": 60,
-      "command": "uv",
-      "args": ["--directory", "/path/to/ffmpeg-mcp/ffmpeg_mcp", "run", "main.py"],
-      "env": { "PYTHONPATH": "/path/to/ffmpeg-mcp" },
+      "command": "uvx",
+      "args": ["ffmpeg-mcp-studio"],
+      "timeout": 600,
       "transportType": "stdio"
     }
   }
@@ -173,7 +197,38 @@ Point your client at the server using the snippets below. Replace `/path/to/ffmp
 
 </details>
 
-### 3. Restart your client and start editing
+To run the latest unreleased code straight from GitHub: `uvx --from git+https://github.com/yubraaj11/ffmpeg-mcp ffmpeg-mcp-studio`. You can also `pip install ffmpeg-mcp-studio` and run `ffmpeg-mcp-studio`.
+
+### Option B: run from source (for development)
+
+```bash
+git clone https://github.com/yubraaj11/ffmpeg-mcp.git
+cd ffmpeg-mcp
+uv sync --frozen
+```
+
+```json
+{
+  "mcpServers": {
+    "ffmpeg-mcp": {
+      "command": "uv",
+      "args": ["--directory", "/path/to/ffmpeg-mcp", "run", "ffmpeg-mcp-studio"]
+    }
+  }
+}
+```
+
+### Where outputs go
+
+| Setting | Output folder |
+| --- | --- |
+| `FFMPEG_MCP_OUTPUT_DIR` env var set | that folder |
+| Installed via `uvx` / `pip` | `~/ffmpeg-mcp-output/` |
+| Running from a source checkout | `ffmpeg_mcp/processed_elements/` |
+
+> Long renders (captions, full compositions) can take a minute or more. If your client has a tool timeout, raise it (e.g. `"timeout": 600` in Cline).
+
+### Restart your client and start editing
 
 > *"Extract 5 evenly-spaced frames from `intro.mp4`."*
 >
@@ -184,8 +239,6 @@ Point your client at the server using the snippets below. Replace `/path/to/ffmp
 > *"Turn `talk.mov` into a Reel with karaoke captions, cut out the pauses, and put `lofi.mp3` quietly underneath."*
 >
 > *"Make a 15-second beat-synced montage of everything in `~/trip/` to `song.mp3`, starting at the drop at 0:42."*
-
-Processed files are written under `ffmpeg_mcp/processed_elements/`.
 
 ---
 
@@ -198,16 +251,39 @@ ffmpeg_mcp/
 ├── core/                # paths, probing, ffmpeg runner, text rendering, styles, transcription, beats
 ├── effects/             # reusable filter builders: reframe, speed, zoom, color, audio, text
 ├── composition/         # timeline models, multi-stage renderer, preset recipes
+├── utils/               # validation decorators & helpers
+├── assets/fonts/        # bundled OFL font for titles and captions
 ├── configs/             # colored logging setup
 └── exceptions/          # structured error messages
-utils/                   # validation decorators & helpers
-statics/fonts/           # bundled OFL font for titles and captions
 tests/                   # pytest suite on synthetic media
+server.json              # MCP Registry manifest
 ```
 
 Single-effect tools and the composition renderer share the same filter builders in `effects/`, so each effect has a single implementation.
 
 Every tool returns either the output file path or a structured JSON error (`status`, `error_type`, `message`, `time`), so failures are easy for the model to read and recover from.
+
+---
+
+## ❓ FAQ
+
+**How do I add automatic captions or subtitles to a video with Claude?**
+Install the server, then ask: *"Add karaoke captions to `/path/talk.mp4`"*. It transcribes locally with Whisper (`add_captions`) and burns in word-synced captions. Use `transcribe_audio` if you only want an `.srt` file.
+
+**Can it make Instagram Reels, YouTube Shorts or TikToks?**
+Yes. `make_reel_from_clips`, `talking_head_reel` and `beat_sync_montage` output 1080×1920 videos, and `export_for_platform` produces upload-ready files (H.264/AAC, fast-start, −14 LUFS) for `instagram_reel`, `tiktok`, `youtube_shorts` and more.
+
+**Does it upload my videos anywhere?**
+No. Everything, including speech-to-text, runs locally with FFmpeg. Only the Whisper model is downloaded once from Hugging Face.
+
+**Which MCP clients does it work with?**
+Any client that supports stdio MCP servers: Claude Desktop, Claude Code, Cursor, Windsurf, Cline, Continue, Zed and others.
+
+**Do I need FFmpeg installed?**
+Yes. Install `ffmpeg` (which includes `ffprobe`) and make sure it is on your `PATH` (`brew install ffmpeg`, `apt install ffmpeg`, or `winget install ffmpeg`).
+
+**Is it an alternative to CapCut or Instagram Edits?**
+It covers many of the same creator features (captions, beat sync, speed ramps, zooms, transitions, music), driven by your AI assistant and scriptable through a JSON timeline instead of a GUI.
 
 ---
 
@@ -227,6 +303,12 @@ uv run pytest
 ```
 
 Found a bug or have an idea? [Open an issue](https://github.com/yubraaj11/ffmpeg-mcp/issues) — and if this project saves you from another `ffmpeg` man-page dive, consider leaving a ⭐.
+
+---
+
+## 📄 License
+
+[MIT](https://github.com/yubraaj11/ffmpeg-mcp/blob/main/LICENSE). The bundled Montserrat font is licensed under the [SIL Open Font License](https://github.com/yubraaj11/ffmpeg-mcp/blob/main/ffmpeg_mcp/assets/fonts/OFL.txt).
 
 ---
 

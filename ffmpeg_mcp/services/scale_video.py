@@ -4,14 +4,15 @@ import os
 import ffmpeg
 
 from ffmpeg_mcp.configs.logging_config import setup_logging
+from ffmpeg_mcp.core.paths import PROCESSED_ROOT
 from ffmpeg_mcp.exceptions import build_exception_message
-from utils import validate_input_video_path
+from ffmpeg_mcp.utils import validate_input_video_path
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-output_video_path = os.path.join(base_dir, '..', 'processed_elements', 'upscaled_video', 'final_edited_video.mp4')
+output_video_path = os.path.join(PROCESSED_ROOT, 'upscaled_video', 'final_edited_video.mp4')
 os.makedirs(os.path.dirname(output_video_path), exist_ok=True)
 
 
