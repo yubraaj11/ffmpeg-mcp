@@ -27,7 +27,9 @@ FFmpeg is incredibly powerful and incredibly hard to remember. `ffmpeg-mcp` hand
 …and the model orchestrates the right tools for you. Each tool is a small, validated Python function — easy to read, reuse, and extend.
 
 - 🗣️ **Natural-language video editing** — works in any MCP client (Claude Desktop, Cursor, Cline, …)
-- 🧱 **12 focused tools** — composable building blocks instead of one giant black box
+- 🎞️ **Creator editing** — Reels/Shorts reframing, word-by-word animated captions, titles, punch-in zooms, speed ramps, beat-synced cuts, jump cuts, colour looks and ducked music
+- 🎬 **Full video production** — one declarative timeline (or a one-call preset) renders a finished, upload-ready video
+- 🧱 **29 focused tools** — composable building blocks instead of one giant black box
 - ✅ **Input validation built in** — paths are checked for existence, emptiness, and validity before FFmpeg runs
 - 🧩 **Hackable** — add a new tool by writing one function and registering it
 
@@ -51,6 +53,57 @@ FFmpeg is incredibly powerful and incredibly hard to remember. `ffmpeg-mcp` hand
 | `concat_clips_with_transition` | Concatenate clips with an `xfade` transition | `input_video_clips`, `transition_type="fade"`, `transition_duration` |
 
 > `?` marks optional parameters. `concat_clips_with_transition` supports many transitions — `fade`, `wipeleft`, `slideup`, `circlecrop`, `dissolve`, `pixelize`, `radial`, and [dozens more](https://trac.ffmpeg.org/wiki/Xfade).
+
+
+### 🎞️ Creator editing tools
+
+| Tool | What it does | Key parameters |
+| --- | --- | --- |
+| `reframe_video` | Convert to 9:16 / 1:1 / 4:5 / 16:9 | `target_format`, `mode` (`crop` / `blur_fill` / `pad`), `focus_x?`, `focus_y?` |
+| `add_text_overlay` | Styled, auto-wrapped title or label with an animation | `text`, `start_time`, `duration?`, `style`, `position`, `animation` |
+| `transcribe_audio` | Local speech-to-text with word timestamps (faster-whisper) → `.json` + `.srt` | `input_media_path`, `model_size="base"`, `language?` |
+| `add_captions` | Burned-in word-synced captions (karaoke highlight, one word at a time, phrases) | `style`, `mode`, `words_per_line`, `transcript_path?` |
+| `change_speed` | Constant speed, slow-mo segments or gradual speed ramps (pitch preserved) | `speed?` or `speed_ramp: [{start, end, speed \| speed_start+speed_end}]` |
+| `apply_zoom` | Punch-in zooms and ken-burns push | `zooms: [{start, end, zoom, center_x, center_y, ease}]`, `ken_burns?` |
+| `apply_color_filter` | Looks: `warm`, `cool`, `vintage`, `bw`, `vivid`, `cinematic`, `matte`, `moody`, or a `.cube` LUT | `preset?`, `lut_path?`, `intensity` |
+| `add_background_music` | Music bed that loops/trims, fades and auto-ducks under speech | `music_path`, `volume`, `duck_voice`, `start_offset`, `replace_audio` |
+| `detect_beats` | Tempo, beat and downbeat times of a song | `audio_path`, `start_offset?` |
+| `remove_silences` | Jump-cut out pauses and dead air | `noise_db`, `min_silence`, `padding` |
+| `export_for_platform` | Upload-ready file: right size, H.264/AAC, fast-start, −14 LUFS | `platform` (`instagram_reel`, `tiktok`, `youtube_shorts`, …) |
+| `render_preview` | Contact sheet of timestamped thumbnails to check an edit | `number_of_frames`, `timestamps?` |
+
+### 🎬 Full video production
+
+| Tool | What it does |
+| --- | --- |
+| `get_editing_capabilities` | Lists every format, platform, style, colour preset, transition and position the tools accept |
+| `render_composition` | Renders a whole edit from a JSON timeline: per-clip trim → speed → reframe → zoom → colour, joined with transitions, then captions, titles, logos, music and platform export. `dry_run=true` returns the resolved timeline without rendering |
+| `make_reel_from_clips` | One call: videos/photos → captioned, titled, transitioned 9:16 Reel with music |
+| `beat_sync_montage` | One call: cuts between clips exactly on the song's beats, with pulse zooms on downbeats |
+| `talking_head_reel` | One call: talking-to-camera recording → vertical crop, karaoke captions, punch-ins, optional jump cuts, ducked music |
+
+Example `render_composition` spec:
+
+```json
+{
+  "format": "reel",
+  "clips": [
+    {"path": "/videos/hook.mp4", "end": 4, "zoom": [{"start": 1.5, "end": 4, "zoom": 1.2, "ease": "snap"}]},
+    {"path": "/videos/broll.mp4", "start": 2, "end": 6, "speed_ramp": [{"start": 1, "end": 3, "speed": 0.4}], "color": "cinematic"},
+    {"path": "/photos/product.jpg", "image_duration": 2.5, "transition_in": {"type": "slideup", "duration": 0.3}}
+  ],
+  "default_transition": {"type": "fade", "duration": 0.4},
+  "text_overlays": [{"text": "3 editing tricks", "start": 0, "duration": 2.5, "style": "title", "animation": "slide_up"}],
+  "image_overlays": [{"path": "/brand/logo.png", "position": "top_right", "width": 160, "opacity": 0.9}],
+  "captions": {"style": "karaoke", "mode": "phrase_highlight"},
+  "music": {"path": "/music/track.mp3", "volume": 0.25, "duck": true},
+  "export": {"platform": "instagram_reel"}
+}
+```
+
+Times: clip `start`/`end` and `speed_ramp` are in source seconds; `zoom` is in seconds within the clip's output; text/image overlays are on the final timeline. Auto-generated transcripts are saved to `processed_elements/transcripts/`. Fix any misheard words in the JSON and pass it back as `captions.transcript_path`.
+
+> Text and captions are rendered with Pillow using the bundled [Montserrat](statics/fonts/OFL.txt) font, so they work even on FFmpeg builds without `libass`/`freetype`. The first caption run downloads the faster-whisper model (~145 MB for `base`).
 
 ---
 
@@ -127,6 +180,10 @@ Point your client at the server using the snippets below. Replace `/path/to/ffmp
 > *"Make a 3-second GIF from `clip.mov` starting at 12s."*
 >
 > *"Concatenate `a.mp4`, `b.mp4`, and `c.mp4` with a 1-second `wipeleft` transition between them."*
+>
+> *"Turn `talk.mov` into a Reel with karaoke captions, cut out the pauses, and put `lofi.mp3` quietly underneath."*
+>
+> *"Make a 15-second beat-synced montage of everything in `~/trip/` to `song.mp3`, starting at the drop at 0:42."*
 
 Processed files are written under `ffmpeg_mcp/processed_elements/`.
 
@@ -138,10 +195,17 @@ Processed files are written under `ffmpeg_mcp/processed_elements/`.
 ffmpeg_mcp/
 ├── main.py              # MCP server entry point — registers all tools
 ├── services/            # one module per tool
+├── core/                # paths, probing, ffmpeg runner, text rendering, styles, transcription, beats
+├── effects/             # reusable filter builders: reframe, speed, zoom, color, audio, text
+├── composition/         # timeline models, multi-stage renderer, preset recipes
 ├── configs/             # colored logging setup
 └── exceptions/          # structured error messages
 utils/                   # validation decorators & helpers
+statics/fonts/           # bundled OFL font for titles and captions
+tests/                   # pytest suite on synthetic media
 ```
+
+Single-effect tools and the composition renderer share the same filter builders in `effects/`, so each effect has a single implementation.
 
 Every tool returns either the output file path or a structured JSON error (`status`, `error_type`, `message`, `time`), so failures are easy for the model to read and recover from.
 
@@ -155,10 +219,11 @@ Contributions are very welcome! Adding a tool is roughly:
 2. Export it from `ffmpeg_mcp/services/__init__.py`.
 3. Register it in `main.py` with `mcp.tool(name_or_fn=your_tool)`.
 
-Please run the linter before opening a PR:
+Please run the linter and tests before opening a PR:
 
 ```bash
 uv run ruff check .
+uv run pytest
 ```
 
 Found a bug or have an idea? [Open an issue](https://github.com/yubraaj11/ffmpeg-mcp/issues) — and if this project saves you from another `ffmpeg` man-page dive, consider leaving a ⭐.
@@ -171,4 +236,7 @@ Found a bug or have an idea? [Open an issue](https://github.com/yubraaj11/ffmpeg
 - [`ffmpeg-python`](https://github.com/kkroening/ffmpeg-python) — Python bindings for FFmpeg
 - [`pydantic`](https://docs.pydantic.dev/) — data validation
 - [`colorlog`](https://github.com/borntyping/python-colorlog) — colored logs
+- [`faster-whisper`](https://github.com/SYSTRAN/faster-whisper) — local speech-to-text for captions
+- [`librosa`](https://librosa.org/) — beat tracking
+- [`Pillow`](https://python-pillow.org/) — title and caption rendering
 </content>
