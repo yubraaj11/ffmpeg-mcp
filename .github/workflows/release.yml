@@ -1,0 +1,84 @@
+name: Release
+
+# Publish by pushing a version tag that matches pyproject.toml and server.json:
+#   git tag v0.2.0 && git push origin v0.2.0
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Check versions match
+        id: version
+        run: |
+          PKG=$(python3 -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          SRV=$(python3 -c "import json;print(json.load(open('server.json'))['version'])")
+          SRV_PKG=$(python3 -c "import json;print(json.load(open('server.json'))['packages'][0]['version'])")
+          echo "pyproject=$PKG server.json=$SRV server.json package=$SRV_PKG ref=$GITHUB_REF_NAME"
+          if [ "$PKG" != "$SRV" ] || [ "$PKG" != "$SRV_PKG" ]; then
+            echo "::error::Version mismatch between pyproject.toml and server.json"; exit 1
+          fi
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "$GITHUB_REF_NAME" != "v$PKG" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match version v$PKG"; exit 1
+          fi
+          echo "version=$PKG" >> "$GITHUB_OUTPUT"
+
+      - name: Build sdist and wheel
+        run: uv build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: astral-sh/setup-uv@v6
+      - name: Publish to PyPI
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          if [ -z "$UV_PUBLISH_TOKEN" ]; then
+            echo "::error::Add a PYPI_API_TOKEN repository secret (Settings > Secrets and variables > Actions)"; exit 1
+          fi
+          uv publish dist/*
+
+  mcp-registry:
+    needs: [build, pypi]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # GitHub OIDC login to the MCP Registry for io.github.<owner>/* names
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for the release to appear on PyPI
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf "https://pypi.org/pypi/ffmpeg-mcp-studio/${{ needs.build.outputs.version }}/json" > /dev/null; then exit 0; fi
+            echo "waiting for PyPI ($i)..."; sleep 10
+          done
+          echo "::error::Version not visible on PyPI after 5 minutes"; exit 1
+      - name: Install mcp-publisher
+        run: |
+          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+      - name: Publish to the MCP Registry
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish

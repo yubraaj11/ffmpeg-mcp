@@ -13,6 +13,7 @@ uvx ffmpeg-mcp-studio   # that's it - add it to your MCP client (see Quick Start
 ```
 
 [![PyPI](https://img.shields.io/pypi/v/ffmpeg-mcp-studio.svg)](https://pypi.org/project/ffmpeg-mcp-studio/)
+[![CI](https://github.com/yubraaj11/ffmpeg-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/yubraaj11/ffmpeg-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/yubraaj11/ffmpeg-mcp/blob/main/LICENSE)
 [![MCP](https://img.shields.io/badge/MCP-server-black.svg)](https://modelcontextprotocol.io)
 [![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/)
@@ -301,6 +302,12 @@ Please run the linter and tests before opening a PR:
 uv run ruff check .
 uv run pytest
 ```
+
+### Releasing (maintainers)
+
+1. Bump `version` in `pyproject.toml` and both `version` fields in `server.json`.
+2. Merge to `main`, then tag: `git tag v0.2.0 && git push origin v0.2.0`.
+3. The **Release** workflow checks the versions match, builds, publishes to PyPI (using the `PYPI_API_TOKEN` secret) and then to the MCP Registry.
 
 Found a bug or have an idea? [Open an issue](https://github.com/yubraaj11/ffmpeg-mcp/issues) — and if this project saves you from another `ffmpeg` man-page dive, consider leaving a ⭐.
 
