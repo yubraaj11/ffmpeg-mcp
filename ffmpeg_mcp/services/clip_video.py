@@ -6,16 +6,17 @@ from uuid import uuid4
 import ffmpeg
 
 from ffmpeg_mcp.configs import setup_logging
+from ffmpeg_mcp.core.paths import PROCESSED_ROOT
 from ffmpeg_mcp.exceptions import build_exception_message
 from ffmpeg_mcp.services.get_video_metadata import get_video_metadata
-from utils import validate_input_video_path
+from ffmpeg_mcp.utils import validate_input_video_path
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 
 CURR_PATH = os.path.dirname(os.path.abspath(__file__))
-CLIPS_ROOT_DIR = os.path.join(CURR_PATH, '..', 'processed_elements', 'video_clips')
+CLIPS_ROOT_DIR = os.path.join(PROCESSED_ROOT, 'video_clips')
 
 os.makedirs(CLIPS_ROOT_DIR, exist_ok=True)
 

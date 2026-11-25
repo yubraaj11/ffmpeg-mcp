@@ -6,7 +6,7 @@ from ffmpeg_mcp.core.paths import output_path
 from ffmpeg_mcp.core.probe import probe_media
 from ffmpeg_mcp.core.runner import run, tool_errors
 from ffmpeg_mcp.effects.audio import mix_music, music_bed
-from utils import validate_input_video_path
+from ffmpeg_mcp.utils import validate_input_video_path
 
 
 @tool_errors

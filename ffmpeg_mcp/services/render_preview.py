@@ -7,7 +7,7 @@ from ffmpeg_mcp.core.paths import job_dir, output_path
 from ffmpeg_mcp.core.probe import probe_media
 from ffmpeg_mcp.core.runner import run, tool_errors
 from ffmpeg_mcp.core.text_render import DEFAULT_FONT, _font
-from utils import validate_input_video_path
+from ffmpeg_mcp.utils import validate_input_video_path
 
 
 @tool_errors

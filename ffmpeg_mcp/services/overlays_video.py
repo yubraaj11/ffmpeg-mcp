@@ -6,13 +6,14 @@ from typing import Literal
 import ffmpeg
 
 from ffmpeg_mcp.configs.logging_config import setup_logging
-from utils import validate_input_video_path
+from ffmpeg_mcp.core.paths import PROCESSED_ROOT
+from ffmpeg_mcp.utils import validate_input_video_path
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 CURR_PATH = os.path.dirname(os.path.abspath(__file__))
-VIDEO_OVERLAY_PATH = os.path.join(CURR_PATH, '..', 'processed_elements', 'video_overlays')
+VIDEO_OVERLAY_PATH = os.path.join(PROCESSED_ROOT, 'video_overlays')
 
 os.makedirs(VIDEO_OVERLAY_PATH, exist_ok=True)
 

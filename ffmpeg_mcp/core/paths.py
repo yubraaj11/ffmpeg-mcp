@@ -5,9 +5,25 @@ from contextlib import contextmanager
 from datetime import datetime
 
 PACKAGE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROCESSED_ROOT = os.path.join(PACKAGE_DIR, 'processed_elements')
-REPO_ROOT = os.path.dirname(PACKAGE_DIR)
-FONTS_DIR = os.path.join(REPO_ROOT, 'statics', 'fonts')
+FONTS_DIR = os.path.join(PACKAGE_DIR, 'assets', 'fonts')
+
+
+def _default_output_root() -> str:
+	"""
+	Where processed files go.
+
+	FFMPEG_MCP_OUTPUT_DIR wins. When installed as a package (pip/uvx) the default is ~/ffmpeg-mcp-output, because
+	site-packages is not a sensible place for user files; a source checkout keeps ffmpeg_mcp/processed_elements.
+	"""
+	configured = os.environ.get('FFMPEG_MCP_OUTPUT_DIR')
+	if configured:
+		return os.path.abspath(os.path.expanduser(configured))
+	if 'site-packages' in PACKAGE_DIR or 'dist-packages' in PACKAGE_DIR:
+		return os.path.join(os.path.expanduser('~'), 'ffmpeg-mcp-output')
+	return os.path.join(PACKAGE_DIR, 'processed_elements')
+
+
+PROCESSED_ROOT = _default_output_root()
 
 
 def category_dir(category: str) -> str:
