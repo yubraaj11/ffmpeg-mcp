@@ -7,16 +7,22 @@ requires-python = ">=3.12"
 dependencies = [
     "colorlog>=6.9.0",
     "fastapi>=0.116.1",
+    "faster-whisper>=1.2.1",
     "fastmcp>=2.11.3",
     "ffmpeg-python>=0.2.0",
     "ipykernel>=6.30.1",
+    "librosa>=1.0.1",
+    "numpy>=2.5.5",
+    "pillow>=13.0.0",
     "pydantic>=2.11.7",
+    "soundfile>=0.14.0",
     "tqdm>=4.67.1",
     "uvicorn>=0.35.0",
 ]
 
 [dependency-groups]
 dev = [
+    "pytest>=9.2.0",
     "ruff>=0.12.11",
 ]
 
