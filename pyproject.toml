@@ -1,27 +1,91 @@
 [project]
-name = "ffmpeg-mcp"
-version = "0.1.0"
-description = "Add your description here"
+name = "ffmpeg-mcp-studio"
+version = "0.2.0"
+description = "AI video editor MCP server powered by FFmpeg: auto captions, Instagram Reels / YouTube Shorts / TikTok formatting, beat-synced cuts, jump cuts, transitions, music and one-call video production for Claude, Cursor and any MCP client."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
+authors = [{ name = "yubraaj11" }]
+keywords = [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "ffmpeg",
+    "video-editing",
+    "video-editor",
+    "ai-video-editor",
+    "video-automation",
+    "claude",
+    "claude-desktop",
+    "cursor",
+    "llm",
+    "ai-agents",
+    "auto-captions",
+    "subtitles",
+    "whisper",
+    "speech-to-text",
+    "instagram-reels",
+    "youtube-shorts",
+    "tiktok",
+    "short-form-video",
+    "beat-sync",
+    "jump-cut",
+    "content-creation",
+    "fastmcp",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Multimedia :: Video :: Conversion",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "colorlog>=6.9.0",
-    "fastapi>=0.116.1",
     "faster-whisper>=1.2.1",
     "fastmcp>=2.11.3",
     "ffmpeg-python>=0.2.0",
-    "ipykernel>=6.30.1",
     "librosa>=1.0.1",
     "numpy>=2.5.5",
     "pillow>=13.0.0",
     "pydantic>=2.11.7",
     "soundfile>=0.14.0",
     "tqdm>=4.67.1",
-    "uvicorn>=0.35.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/yubraaj11/ffmpeg-mcp"
+Repository = "https://github.com/yubraaj11/ffmpeg-mcp"
+Issues = "https://github.com/yubraaj11/ffmpeg-mcp/issues"
+Documentation = "https://github.com/yubraaj11/ffmpeg-mcp#readme"
+
+[project.scripts]
+ffmpeg-mcp-studio = "ffmpeg_mcp.main:main"
+ffmpeg-mcp = "ffmpeg_mcp.main:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["ffmpeg_mcp"]
+exclude = ["ffmpeg_mcp/experiments", "ffmpeg_mcp/processed_elements", "**/__pycache__"]
+
+[tool.hatch.build.targets.sdist]
+include = ["ffmpeg_mcp", "tests", "README.md", "LICENSE", "server.json"]
+exclude = ["ffmpeg_mcp/experiments", "ffmpeg_mcp/processed_elements", "**/__pycache__"]
 
 [dependency-groups]
 dev = [
+    "ipykernel>=6.30.1",
     "pytest>=9.2.0",
     "ruff>=0.12.11",
 ]

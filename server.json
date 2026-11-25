@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.yubraaj11/ffmpeg-mcp",
+  "title": "ffmpeg-mcp Studio",
+  "description": "AI video editor on FFmpeg: auto captions, Reels/Shorts/TikTok, beat-synced cuts, music, transitions.",
+  "repository": {
+    "url": "https://github.com/yubraaj11/ffmpeg-mcp",
+    "source": "github"
+  },
+  "version": "0.2.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "ffmpeg-mcp-studio",
+      "version": "0.2.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "FFMPEG_MCP_OUTPUT_DIR",
+          "description": "Folder for rendered videos and other outputs (default: ~/ffmpeg-mcp-output)",
+          "isRequired": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
