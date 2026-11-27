@@ -22,6 +22,8 @@ uvx ffmpeg-mcp-studio   # that's it - add it to your MCP client (see Quick Start
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 [![Stars](https://img.shields.io/github/stars/yubraaj11/ffmpeg-mcp?style=social)](https://github.com/yubraaj11/ffmpeg-mcp)
 
+[![ffmpeg-mcp Studio MCP server](https://mcprush.com/badge/ffmpeg-mcp-studio/card.svg)](https://mcprush.com/to/ffmpeg-mcp-studio?ref=badge)
+
 </div>
 
 <!-- mcp-name: io.github.yubraaj11/ffmpeg-mcp -->
@@ -228,6 +230,26 @@ uv sync --frozen
 | Running from a source checkout | `ffmpeg_mcp/processed_elements/` |
 
 > Long renders (captions, full compositions) can take a minute or more. If your client has a tool timeout, raise it (e.g. `"timeout": 600` in Cline).
+
+### Where to find it
+
+| Where | What it is |
+| --- | --- |
+| [PyPI: `ffmpeg-mcp-studio`](https://pypi.org/project/ffmpeg-mcp-studio/) | The package that `uvx ffmpeg-mcp-studio` downloads and runs |
+| [Official MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=ffmpeg-mcp) | `io.github.yubraaj11/ffmpeg-mcp`, which clients and directories discover servers from |
+| [mcprush](https://mcprush.com/to/ffmpeg-mcp-studio?ref=badge) | Directory listing |
+| [GitHub](https://github.com/yubraaj11/ffmpeg-mcp) | Source code, issues and releases |
+
+The config goes in your MCP client:
+
+| Client | Config location |
+| --- | --- |
+| Claude Desktop | `claude_desktop_config.json`: `~/Library/Application Support/Claude/` (macOS) or `%APPDATA%\Claude\` (Windows). Settings → Developer → Edit Config |
+| Cursor | `.cursor/mcp.json` in your project, or `~/.cursor/mcp.json` for all projects |
+| Claude Code | `claude mcp add ffmpeg-mcp -- uvx ffmpeg-mcp-studio` |
+| Cline | Cline → MCP Servers → Configure → `cline_mcp_settings.json` |
+
+When the client starts, `uvx` fetches the package from PyPI into its cache (`~/.cache/uv`) and runs it locally. Your videos never leave your machine.
 
 ### Restart your client and start editing
 
